@@ -88,26 +88,10 @@
                     <obfuscate>true</obfuscate>
                     <options>
                         <option>-keep public class shoe.l011.Main</option>
-                        <option> -keepclassmembers public class shoe.l011.** {
-                            public static * ;
-                            }</option>
-                        <option>-dontwarn com.google.common.base.**</option>
-                        <option>-keep class com.google.common.base.** {*;}</option>
-                        <option>-dontwarn com.google.errorprone.annotations.**</option>
-                        <option>-keep class com.google.errorprone.annotations.** {*;}</option>
-                        <option>-dontwarn com.google.j2objc.annotations.**</option>
-                        <option>-keep class com.google.j2objc.annotations.** { *; }</option>
-                        <option>-dontwarn java.lang.ClassValue</option>
-                        <option>-keep class java.lang.ClassValue { *; }</option>
-                        <option>-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement</option>
-                        <option>-keep class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement { *; }</option>
+                        <option> -keepclassmembers public class shoe.l011.** {public static * ;}</option>
                         <option>-dontwarn afu.org.checkerframework.**</option>
                         <option>-dontwarn org.checkerframework.**</option>
-                        <option>
-                            -dontwarn com.google.errorprone.**
-                            -dontwarn sun.misc.Unsafe
-                            -dontwarn com.google.common.hash.**
-                        </option>
+                        <option>-dontwarn com.google.common.hash.**</option>
                     </options>
                     <injar>${project.build.finalName}-jar-with-dependencies.jar</injar>
                     <outjar>${project.build.finalName}-small.jar</outjar>
