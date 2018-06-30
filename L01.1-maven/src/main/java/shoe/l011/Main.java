@@ -13,7 +13,7 @@ import java.util.*;
 public class Main {
     private static final int MEASURE_COUNT = 1;
 
-    public static void main(String... args) {
+    public static void main(String[] args) {
         Collection<Integer> example = new ArrayList<>();
         int min = 0;
         int max = 999_999;
@@ -34,4 +34,5 @@ public class Main {
         long timeNs = (finishTime - startTime) / MEASURE_COUNT;
         System.out.println("Time spent: " + timeNs + "ns (" + timeNs / 1_000_000 + "ms)");
     }
+
 }
