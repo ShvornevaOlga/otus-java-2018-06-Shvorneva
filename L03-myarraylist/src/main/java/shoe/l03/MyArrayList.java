@@ -38,15 +38,14 @@ public class MyArrayList<T> implements List<T> {
 
     public boolean add(T t) {
         if (size == elementData.length)
-            elementData = grow();
+             grow();
         this.elementData[size] = t;
         size++;
         return true;
     }
 
-    private Object[] grow() {
-        return elementData = Arrays.copyOf(elementData,
-                newCapacity());
+    private void grow() {
+        this.elementData = Arrays.copyOf(elementData, newCapacity());
     }
 
     private int newCapacity() {
