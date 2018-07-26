@@ -1,15 +1,10 @@
 package shoe.l21.empty;
 
-import shoe.l21.EmptyArray;
-
 import java.util.ArrayList;
 
-public class ListArrayObject extends EmptyArray implements ArrayObject {
+public class ListArrayObject implements ObjectCreator {
     @Override
-    public Object[] getCompletedArray() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new ArrayList<>();
-        }
-        return array;
+    public Object createObject() {
+        return new ArrayList<>();
     }
 }

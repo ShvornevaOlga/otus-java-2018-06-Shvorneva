@@ -1,15 +1,10 @@
 package shoe.l21.empty;
 
-import shoe.l21.EmptyArray;
-
 import java.util.TreeSet;
 
-public class TreeSetArrayObject extends EmptyArray implements ArrayObject {
+public class TreeSetArrayObject implements ObjectCreator {
     @Override
-    public Object[] getCompletedArray() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new TreeSet<>();
-        }
-        return array;
+    public Object createObject() {
+        return new TreeSet<>();
     }
 }

@@ -1,109 +1,108 @@
 package shoe.l21;
 
-import shoe.l21.empty.ArrayObject;
-import shoe.l21.empty.ObjectFactory;
-import shoe.l21.notempty.ArrayCollection;
-import shoe.l21.notempty.CollectionFactory;
+import shoe.l21.empty.*;
+import shoe.l21.notempty.*;
 
 import java.lang.management.ManagementFactory;
 
 public class Main {
+    private static ObjectFactory objectFactory = new ObjectFactory();
+    private static CollectionFactory collectionFactory = new CollectionFactory();
+
     public static void main(String... args) throws InterruptedException {
         System.out.println("pid: " + ManagementFactory.getRuntimeMXBean().getName());
-        ObjectFactory factory = new ObjectFactory();
-        getEmptyObjectMem(factory);
-        CollectionFactory collectionFactory = new CollectionFactory();
-        getObjectMem(collectionFactory);
+        getEmptyObjectMem();
+        getObjectMem();
     }
 
-    private static void getObjectMem(CollectionFactory collectionFactory) throws InterruptedException {
+    private static void getObjectMem() throws InterruptedException {
         int size = 10;
         for (int i = 0; i <= 3; i++) {
             System.out.println("ArrayList for " + size + " object:");
-            getCollectionMem(collectionFactory, "array", size);
+            getCollectionMem("ArrayList", size);
             size = size + (size >> 1);
             System.out.println();
         }
         for (int i = 0; i <= 3; i++) {
-            System.out.println("Linkedlist for " + i + " object:");
-            getCollectionMem(collectionFactory, "linked", i);
+            System.out.println("LinkedList for " + i + " object:");
+            getCollectionMem("LinkedList", i);
             System.out.println();
         }
         size = 10;
         for (int i = 0; i <= 3; i++) {
             System.out.println("Vector for " + size + " object:");
-            getCollectionMem(collectionFactory, "vector", size);
+            getCollectionMem("Vector", size);
             size = size + size;
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("HashSet for " + i + " object:");
-            getCollectionMem(collectionFactory, "hashSet", i);
+            getCollectionMem("HashSet", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("TreeSet for " + i + " object:");
-            getCollectionMem(collectionFactory, "treeSet", i);
+            getCollectionMem("TreeSet", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("LinkedHashSet for " + i + " object:");
-            getCollectionMem(collectionFactory, "linkedHashSet", i);
+            getCollectionMem("LinkedHashSet", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("HashMap for " + i + " object:");
-            getCollectionMem(collectionFactory, "hashMap", i);
+            getCollectionMem("HashMap", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("LinkedHashMap for " + i + " object:");
-            getCollectionMem(collectionFactory, "linkedHashMap", i);
+            getCollectionMem("LinkedHashMap", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("TreeMap for " + i + " object:");
-            getCollectionMem(collectionFactory, "treeMap", i);
+            getCollectionMem("TreeMap", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("HashTable for " + i + " object:");
-            getCollectionMem(collectionFactory, "hashTable", i);
+            getCollectionMem("HashTable", i);
             System.out.println();
         }
         for (int i = 1; i <= 4; i++) {
             System.out.println("WeakHashMap for " + i + " object:");
-            getCollectionMem(collectionFactory, "weakHashMap", i);
+            getCollectionMem("WeakHashMap", i);
             System.out.println();
         }
 
     }
 
-    private static void getEmptyObjectMem(ObjectFactory factory) throws InterruptedException {
+    private static void getEmptyObjectMem() throws InterruptedException {
         System.out.println("Empty String:");
-        getObjectMem(factory, "string");
+        getObjectMem("String");
         System.out.println("Empty ArrayList:");
-        getObjectMem(factory, "list");
+        getObjectMem("ArrayList");
         System.out.println("Empty LinkedList:");
-        getObjectMem(factory, "linkedList");
+        getObjectMem("LinkedList");
         System.out.println("Empty Vector:");
-        getObjectMem(factory, "vector");
+        getObjectMem("Vector");
         System.out.println("Empty HashSet:");
-        getObjectMem(factory, "hashSet");
+        getObjectMem("HashSet");
         System.out.println("Empty TreeSet:");
-        getObjectMem(factory, "treeSet");
+        getObjectMem("TreeSet");
         System.out.println("Empty LinkedHashSet:");
-        getObjectMem(factory, "linkedHashSet");
+        getObjectMem("LinkedHashSet");
         System.out.println("Empty HashMap:");
-        getObjectMem(factory, "hashMap");
+        getObjectMem("HashMap");
         System.out.println("Empty LinkedHashMap:");
-        getObjectMem(factory, "linkedHashMap");
+        getObjectMem("LinkedHashMap");
         System.out.println("Empty TreeMap:");
-        getObjectMem(factory, "treeMap");
+        getObjectMem("TreeMap");
         System.out.println("Empty HashTable:");
-        getObjectMem(factory, "hashTable");
+        getObjectMem("HashTable");
         System.out.println("Empty WeakHashMap:");
-        getObjectMem(factory, "weakHashMap");
+        getObjectMem("WeakHashMap");
     }
 
     private static long getMem() throws InterruptedException {
@@ -113,25 +112,30 @@ public class Main {
         return runtime.totalMemory() - runtime.freeMemory();
     }
 
-    private static void getObjectMem(ObjectFactory factory, String object) throws InterruptedException {
-
+    private static void getObjectMem(String creator) throws InterruptedException {
         int size = 2_000_000;
-        ArrayObject arrayObject = factory.getArrayObject(object);
-        Object[] array = arrayObject.getArray(size);
+        Object[] array = new Object[size];
+
         long mem2 = getMem();
-        array = arrayObject.getCompletedArray();
+
+        for (int i = 0; i < array.length; i++) {
+            array[i] = objectFactory.createObject(creator);
+        }
+
         long mem3 = getMem();
         System.out.println("Element size: " + (mem3 - mem2) / array.length);
         System.out.println();
         array = null;
     }
 
-    private static void getCollectionMem(CollectionFactory factory, String object, int size) throws InterruptedException {
+    private static void getCollectionMem(String creator, int size) throws InterruptedException {
         int arraySize = 2_000_000;
-        ArrayCollection arrayCollection = factory.getArrayObject(object);
-        Object[] array = arrayCollection.getArray(arraySize);
+        Object[] array = new Object[arraySize];
+
         long mem2 = getMem();
-        array = arrayCollection.getCompletedArray(size);
+        for (int i = 0; i < array.length; i++) {
+            array[i] = collectionFactory.createObject(creator, size);
+        }
         long mem3 = getMem();
         System.out.println("Element size for: " + (mem3 - mem2) / array.length);
         array = null;

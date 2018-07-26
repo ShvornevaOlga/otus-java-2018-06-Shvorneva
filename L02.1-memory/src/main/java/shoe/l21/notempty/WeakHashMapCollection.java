@@ -1,20 +1,16 @@
 package shoe.l21.notempty;
 
-import shoe.l21.EmptyArray;
-
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class WeakHashMapCollection  extends EmptyArray implements ArrayCollection {
+public class WeakHashMapCollection  implements CollectionCreator {
+
     @Override
-    public Object[] getCompletedArray(int size) {
-        for (int i = 0; i < array.length; i++) {
-            Map<Integer, Integer> map = new WeakHashMap<>();
-            for (int j = 0; j < size; j++) {
-                map.put(j,j);
-            }
-            array[i] = map;
+    public Object createObject(int size) {
+        Map<Integer, Integer> map = new WeakHashMap<>();
+        for (int j = 0; j < size; j++) {
+            map.put(j,j);
         }
-        return array;
+        return map;
     }
 }

@@ -1,15 +1,10 @@
 package shoe.l21.empty;
 
-import shoe.l21.EmptyArray;
-
 import java.util.LinkedHashMap;
 
-public class LinkedHashMapArrayObject extends EmptyArray implements ArrayObject {
+public class LinkedHashMapArrayObject implements ObjectCreator {
     @Override
-    public Object[] getCompletedArray() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new LinkedHashMap<>();
-        }
-        return array;
+    public Object createObject() {
+        return new LinkedHashMap<>();
     }
 }

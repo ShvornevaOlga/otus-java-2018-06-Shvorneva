@@ -1,15 +1,10 @@
 package shoe.l21.empty;
 
-import shoe.l21.EmptyArray;
-
 import java.util.LinkedList;
 
-public class LinkedListArrayObject extends EmptyArray implements ArrayObject {
+public class LinkedListArrayObject implements ObjectCreator {
     @Override
-    public Object[] getCompletedArray() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new LinkedList<>();
-        }
-        return array;
+    public Object createObject() {
+        return new LinkedList<> ();
     }
 }
