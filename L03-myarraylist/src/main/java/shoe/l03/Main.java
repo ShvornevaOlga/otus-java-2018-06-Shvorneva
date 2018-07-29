@@ -1,6 +1,5 @@
 package shoe.l03;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 public class Main {
