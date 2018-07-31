@@ -1,19 +1,14 @@
 package ru.shoe.l41;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import ru.shoe.l41.annotations.Before;
+import ru.shoe.l41.annotations.Test;
 
 import java.lang.reflect.Method;
 
-/**
- * Created by tully.
- */
 public class ReflectionHelperTest {
 
     @Before
     public void beforeTheTest(){
-
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -38,7 +33,7 @@ public class ReflectionHelperTest {
         TestClass test = new TestClass(1, "A");
         Assert.assertEquals("A", test.getS());
         ReflectionHelper.setFieldValue(test, "s", "B");
-        Assert.assertEquals("B", test.getS());
+        Assert.assertEquals("B1", test.getS());
     }
 
     @Test
@@ -48,6 +43,7 @@ public class ReflectionHelperTest {
         TestClass test = new TestClass(1, "A");
         ReflectionHelper.callMethod(test, "setDefault");
         Assert.assertEquals("", test.getS());
+        Assert.assertTrue("1".equals(test.getS()));
     }
 
     @Test

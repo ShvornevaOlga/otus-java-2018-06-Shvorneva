@@ -9,18 +9,22 @@ import java.util.List;
 
 class MyTestFramework {
     <T> void run(Class<T> tClass) {
-       List<Method> testMethods = ReflectionHelper.getAnnotatedMethod(tClass, Test.class);
+        List<Method> testMethods = ReflectionHelper.getAnnotatedMethod(tClass, Test.class);
         List<Method> beforeMethods = ReflectionHelper.getAnnotatedMethod(tClass, Before.class);
-        List<Method>afterMethods = ReflectionHelper.getAnnotatedMethod(tClass, After.class);
+        List<Method> afterMethods = ReflectionHelper.getAnnotatedMethod(tClass, After.class);
         for (Method method : testMethods) {
             T obj = ReflectionHelper.instantiate(tClass);
-            if (obj != null) {
-                for (Method beforeMethod : beforeMethods) {
-                    ReflectionHelper.callMethod(obj,  beforeMethod.getName());
+            try {
+                if (obj != null) {
+                    for (Method beforeMethod : beforeMethods) {
+                        ReflectionHelper.callMethod(obj, beforeMethod.getName());
+                    }
+                    ReflectionHelper.callMethod(obj, method.getName());
                 }
-                ReflectionHelper.callMethod(obj,  method.getName());
+            }finally {
+                if (obj!=null)
                 for (Method afterMethod : afterMethods) {
-                    ReflectionHelper.callMethod(obj,  afterMethod.getName());
+                    ReflectionHelper.callMethod(obj, afterMethod.getName());
                 }
             }
         }

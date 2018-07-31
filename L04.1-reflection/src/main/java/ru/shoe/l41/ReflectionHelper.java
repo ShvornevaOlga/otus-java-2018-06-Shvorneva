@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by tully.
- */
 @SuppressWarnings("SameParameterValue")
 class ReflectionHelper {
     private ReflectionHelper() {
@@ -74,8 +71,14 @@ class ReflectionHelper {
             isAccessible = method.canAccess(object);
             method.setAccessible(true);
             return method.invoke(object, args);
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (IllegalAccessException | NoSuchMethodException e) {
             e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof AssertionError) {
+                StackTraceElement[] stackTraceElements = e.getCause().getStackTrace();
+                System.err.println(stackTraceElements[1]);
+                System.err.println(e.getCause().getMessage() + "\n");
+            } else e.printStackTrace();
         } finally {
             if (method != null && !isAccessible) {
                 method.setAccessible(false);
@@ -91,7 +94,7 @@ class ReflectionHelper {
         for (Method m : methods) {
             Annotation[] annotation = m.getDeclaredAnnotations();
             for (Annotation a : annotation) {
-                if (annotationClass.isInstance(a)){
+                if (annotationClass.isInstance(a)) {
                     annotatedMethods.add(m);
                 }
             }

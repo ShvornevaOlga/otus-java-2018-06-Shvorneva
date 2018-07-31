@@ -21,7 +21,7 @@ public class MyAnnotationsTest {
     }
 
     @Test
-    public void testTwo(){
+    public void testTwo() {
         System.out.println("testTwo");
     }
 

@@ -2,9 +2,6 @@ package ru.shoe.l41;
 
 import ru.shoe.l41.annotations.Test;
 
-/**
- * Created by tully.
- */
 @SuppressWarnings("unused")
 public class TestClass {
     static final int DEFAULT_A  = 0;
