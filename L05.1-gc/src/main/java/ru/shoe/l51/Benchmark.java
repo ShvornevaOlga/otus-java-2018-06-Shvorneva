@@ -8,13 +8,11 @@ class Benchmark implements BenchmarkMBean {
 
     void run() {
         long startTime = System.currentTimeMillis();
-        GCTimeUtil.startGCMonitor();
         System.out.println("Starting the loop");
         List<Integer> list = new ArrayList<>();
         while (System.currentTimeMillis() - startTime < 6 * 1000 * 60) {
             allocate(list);
         }
-        GCTimeUtil.stopGCMonitor();
     }
 
     private void allocate(List list) {

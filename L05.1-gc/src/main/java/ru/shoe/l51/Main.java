@@ -23,7 +23,9 @@ public class Main {
         mbs.registerMBean(mbean, name);
 
         mbean.setSize(size);
+        GCTimeUtil.startGCMonitor();
         mbean.run();
+        GCTimeUtil.stopGCMonitor();
     }
 
 }
