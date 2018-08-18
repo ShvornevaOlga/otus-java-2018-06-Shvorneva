@@ -2,16 +2,18 @@ package ru.shoe.l061.cache;
 
 /**
  * Created by tully.
+ * Changed by Shvorneva Olga
  */
 public class CacheMain {
 
     public static void main(String[] args) throws InterruptedException {
-        //new CacheMain().eternalCacheExample();
-        //new CacheMain().lifeCacheExample();
+        new CacheMain().eternalCacheExample();
+        new CacheMain().lifeCacheExample();
         new CacheMain().idleCacheExample();
     }
 
     private void eternalCacheExample() {
+        System.out.println("Test for eternal cache:");
         int size = 6;
         CacheEngine<Integer, String> cache = new CacheEngineImpl<>(size, 0, 0, true);
 
@@ -31,6 +33,7 @@ public class CacheMain {
     }
 
     private void lifeCacheExample() throws InterruptedException {
+        System.out.println("Test for life cache:");
         int size = 5;
         CacheEngine<Integer, String> cache = new CacheEngineImpl<>(size, 1000, 0, false);
 
@@ -60,6 +63,7 @@ public class CacheMain {
     }
 
     private void idleCacheExample() throws InterruptedException {
+        System.out.println("Test for idle cache:");
         int size = 10;
         CacheEngine<Integer, String> cache = new CacheEngineImpl<>(size, 0, 5000, false);
 

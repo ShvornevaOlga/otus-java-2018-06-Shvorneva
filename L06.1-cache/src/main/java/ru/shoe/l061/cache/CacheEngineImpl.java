@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 /**
  * Created by tully.
+ * Changed by Shvorneva Olga
  */
 public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
     private static final int TIME_THRESHOLD_MS = 5;
