@@ -33,7 +33,7 @@ public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
         this.isEternal = lifeTimeMs == 0 && idleTimeMs == 0 || isEternal;
     }
 
-    public void put(MyElement<K, V> element) {
+    /*public void put(MyElement<K, V> element) {
         if (elements.size() == maxElements) {
             K firstKey = elements.keySet().iterator().next();
             elements.remove(firstKey);
@@ -52,9 +52,29 @@ public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
                 timer.schedule(idleTimerTask, idleTimeMs, idleTimeMs);
             }
         }
+    }*/
+    public void put(K key, V value) {
+        if (elements.size() == maxElements) {
+            K firstKey = elements.keySet().iterator().next();
+            elements.remove(firstKey);
+        }
+
+        MyElement element = new MyElement<>(key, value);
+        elements.put(key, new SoftReference<>(element));
+
+        if (!isEternal) {
+            if (lifeTimeMs != 0) {
+                TimerTask lifeTimerTask = getTimerTask(key, lifeElement -> lifeElement.getCreationTime() + lifeTimeMs);
+                timer.schedule(lifeTimerTask, lifeTimeMs);
+            }
+            if (idleTimeMs != 0) {
+                TimerTask idleTimerTask = getTimerTask(key, idleElement -> idleElement.getLastAccessTime() + idleTimeMs);
+                timer.schedule(idleTimerTask, idleTimeMs, idleTimeMs);
+            }
+        }
     }
 
-    public MyElement<K, V> get(K key) {
+    /*public MyElement<K, V> get(K key) {
         MyElement<K, V> element = null;
         if (elements.get(key) != null) {
             element = elements.get(key).get();
@@ -68,8 +88,24 @@ public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
             miss++;
         }
         return element;
+    }*/
+    public V get(K key) {
+        MyElement<K, V> element = null;
+        V value = null;
+        if (elements.get(key) != null) {
+            element = elements.get(key).get();
+            if (element != null) {
+                value = element.getValue();
+                hit++;
+                element.setAccessed();
+            } else {
+                miss++;
+            }
+        } else {
+            miss++;
+        }
+        return value;
     }
-
     public int getHitCount() {
         return hit;
     }
