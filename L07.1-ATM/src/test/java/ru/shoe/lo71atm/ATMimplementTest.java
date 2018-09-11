@@ -9,10 +9,10 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class ATMimplementTest {
-    private ATMimplement atm;
+    private ATM atm;
     private Client client;
     private Map<Banknote, Integer> cash;
-    private BankImpl bankImpl;
+    private Bank bankImpl;
 
     @Before
     public void setUp() throws Exception {
@@ -25,11 +25,11 @@ public class ATMimplementTest {
         }
         atm.setBanknotes(banknotes);
         client = new Client(1);
-        bankImpl.addBill(client.getId());
+        bankImpl.addBill(client);
         cash = new HashMap<>();
-        cash.put(Banknote.banknote_50, 3);
-        cash.put(Banknote.banknote_100, 8);
-        client.getMoney(cash);
+        cash.put(Banknote.BANKNOTE_50, 3);
+        cash.put(Banknote.BANKNOTE_100, 8);
+        client.withdrawMoney(cash);
     }
 
     @Test
@@ -40,10 +40,10 @@ public class ATMimplementTest {
             newBanknotes.put(banknote, newBanknotes.get(banknote) + cash.get(banknote));
             sum += banknote.getNominal() * cash.get(banknote);
         }
-        long newBalance = bankImpl.balance(client.getId()) + sum;
+        long newBalance = bankImpl.balance(client) + sum;
         atm.putMoneyToATM(client, cash);
         assertEquals(newBanknotes, atm.lookBanknotes());
-        assertEquals(newBalance, bankImpl.balance(client.getId()));
+        assertEquals(newBalance, bankImpl.balance(client));
     }
 
     @Test
@@ -52,18 +52,18 @@ public class ATMimplementTest {
         Map<Banknote, Integer> newBanknotes = atm.lookBanknotes();
         int sum = 750;
         Map<Banknote, Integer> needBanknotes = new HashMap<>();
-        needBanknotes.put(Banknote.banknote_50, 1);
-        needBanknotes.put(Banknote.banknote_100, 2);
-        needBanknotes.put(Banknote.banknote_500, 1);
+        needBanknotes.put(Banknote.BANKNOTE_50, 1);
+        needBanknotes.put(Banknote.BANKNOTE_100, 2);
+        needBanknotes.put(Banknote.BANKNOTE_500, 1);
         for (Banknote banknote : needBanknotes.keySet()) {
             newBanknotes.put(banknote, newBanknotes.get(banknote) - needBanknotes.get(banknote));
         }
         long newAmount = atm.getAmount();
         newAmount -= sum;
-        long newBalance = bankImpl.balance(client.getId()) - sum;
+        long newBalance = bankImpl.balance(client) - sum;
         atm.getMoneyFromATM(client, sum);
         assertEquals(newAmount, atm.getAmount());
-        assertEquals(newBalance, bankImpl.balance(client.getId()));
+        assertEquals(newBalance, bankImpl.balance(client));
         assertEquals(newBanknotes, atm.lookBanknotes());
     }
 
@@ -90,11 +90,11 @@ public class ATMimplementTest {
     public void getAccountBalance() throws Exception {
         atm.putMoneyToATM(client, cash);
         Map<Banknote, Integer> newBanknotes = atm.lookBanknotes();
-        long balance = bankImpl.balance(client.getId());
+        long balance = bankImpl.balance(client);
         Map<Banknote, Integer> banknotes = new HashMap<>();
-        banknotes.put(Banknote.banknote_50, 1);
-        banknotes.put(Banknote.banknote_100, 4);
-        banknotes.put(Banknote.banknote_500, 1);
+        banknotes.put(Banknote.BANKNOTE_50, 1);
+        banknotes.put(Banknote.BANKNOTE_100, 4);
+        banknotes.put(Banknote.BANKNOTE_500, 1);
         for (Banknote banknote : banknotes.keySet()) {
             newBanknotes.put(banknote, newBanknotes.get(banknote) - banknotes.get(banknote));
         }
@@ -103,7 +103,7 @@ public class ATMimplementTest {
         long newBalance = 0;
         atm.getAccountBalance(client);
         assertEquals(newAmount, atm.getAmount());
-        assertEquals(newBalance, bankImpl.balance(client.getId()));
+        assertEquals(newBalance, bankImpl.balance(client));
         assertEquals(newBanknotes, atm.lookBanknotes());
     }
 }

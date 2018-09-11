@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class ATMimplement implements ATM {
-    private Map<Banknote, Integer> banknotes;
+public class ATMimplement implements ATM {
+    private List<Cell> banknotes;
     private Bank bank;
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ATMimplement.class);
 
@@ -14,29 +14,37 @@ class ATMimplement implements ATM {
     //========================constructors==========================================================================
     //==================================================================================================================
     ATMimplement() {
-        banknotes = new HashMap<>();
+        banknotes = new ArrayList<>();
         for (Banknote banknote : Banknote.values()) {
-            banknotes.put(banknote, 0);
+            Cell cell = new Cell(banknote);
+            banknotes.add(cell);
         }
     }
 
     //==================================================================================================================
     //=======================getters, setters==========================================================================
     //==================================================================================================================
-    void setBank(Bank bank) {
+    @Override
+    public void setBank(Bank bank) {
         this.bank = bank;
     }
 
-    void setBanknotes(Map<Banknote, Integer> cash) {
+    @Override
+    public void setBanknotes(Map<Banknote, Integer> cash) {
         for (Banknote banknote : cash.keySet()) {
-            banknotes.put(banknote, cash.get(banknote));
+            for (Cell cell : banknotes) {
+                if (cell.getBanknote().equals(banknote)) {
+                    cell.setCount(cash.get(banknote));
+                }
+            }
         }
     }
 
-    long getAmount() {
+    @Override
+    public long getAmount() {
         long amount = 0;
-        for (Banknote banknote : banknotes.keySet()) {
-            amount += banknote.nominal * banknotes.get(banknote);
+        for (Cell cell : banknotes) {
+            amount += cell.getBanknote().getNominal() * cell.getCount();
         }
         return amount;
     }
@@ -45,26 +53,21 @@ class ATMimplement implements ATM {
     //===========================methods============================================================================
     //==================================================================================================================
     @Override
-    public Map<Banknote, Integer> lookBanknotes() {
-        Map<Banknote, Integer> cashCopy = new HashMap<>();
-        for (Banknote banknote : banknotes.keySet()) {
-            cashCopy.put(banknote, banknotes.get(banknote));
-        }
-        return cashCopy;
-    }
-
-    @Override
     public void putMoneyToATM(Client client, Map<Banknote, Integer> putBanknotes) {
         client.putMoney(putBanknotes);
         long sum = 0;
         logger.info("Купюры в банкомате до приема:");
-        for (Banknote banknote : banknotes.keySet()) {
-            logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
+        for (Cell cell : banknotes) {
+            logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
         }
 
         for (Banknote banknote : putBanknotes.keySet()) {
             int quantityPutBanknote = putBanknotes.get(banknote);
-            banknotes.put(banknote, banknotes.get(banknote) + quantityPutBanknote);
+            for (Cell cell : banknotes) {
+                if (cell.getBanknote().equals(banknote)) {
+                    cell.setCount(cell.getCount() + quantityPutBanknote);
+                }
+            }
             sum += banknote.getNominal() * quantityPutBanknote;
         }
         logger.info("Принаятые купюры:");
@@ -72,37 +75,39 @@ class ATMimplement implements ATM {
             logger.info(banknote.getNominal() + "руб: " + putBanknotes.get(banknote));
         }
         logger.info("Купюры в банкомате после приема:");
-        for (Banknote banknote : banknotes.keySet()) {
-            logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
+        for (Cell cell : banknotes) {
+            logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
         }
-        bank.depositBill(client.getId(), sum);
+        bank.depositBill(client, sum);
     }
 
     @Override
     public void getMoneyFromATM(Client client, long sum) throws ATMExeption {
         if (getAmount() >= sum) {
-            if (bank.balance(client.getId()) >= sum) {
+            if (bank.balance(client) >= sum) {
                 Map<Banknote, Integer> cashToGet = new HashMap<>();
                 long remainingSum = getRemainingSum(sum, cashToGet);
                 if (remainingSum == 0) {
                     logger.info("Купюры в банкомате до выдачи:");
-                    for (Banknote banknote : banknotes.keySet()) {
-                        logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
+                    for (Cell cell : banknotes) {
+                        logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
                     }
                     for (Banknote banknote : cashToGet.keySet()) {
-                        int quantityATMBanknote = banknotes.get(banknote);
-                        int quantityPutBanknote = cashToGet.get(banknote);
-                        banknotes.put(banknote, quantityATMBanknote - quantityPutBanknote);
+                        for (Cell cell: banknotes){
+                            if (cell.getBanknote().equals(banknote)){
+                                cell.setCount(cell.getCount() - cashToGet.get(banknote));
+                            }
+                        }
                     }
-                    bank.creditBill(client.getId(), sum);
-                    client.getMoney(cashToGet);
+                    bank.creditBill(client, sum);
+                    client.withdrawMoney(cashToGet);
                     logger.info("Выданные купюры:");
                     for (Banknote banknote : cashToGet.keySet()) {
                         logger.info(banknote.getNominal() + "руб: " + cashToGet.get(banknote));
                     }
                     logger.info("Купюры в банкомате после выдачи:");
-                    for (Banknote banknote : banknotes.keySet()) {
-                        logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
+                    for (Cell cell : banknotes) {
+                        logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
                     }
                 } else {
                     throw new ATMExeption("Не корректная сумма");
@@ -116,49 +121,25 @@ class ATMimplement implements ATM {
         List<Banknote> mas = sortNominal();
         for (Banknote banknote : mas) {
             int needBanknotes = (int) remainingSum / banknote.getNominal();
-            if (needBanknotes <= banknotes.get(banknote)) {
-                if (needBanknotes > 0) {
-                    cashToGet.put(banknote, needBanknotes);
-                    remainingSum = remainingSum % banknote.getNominal();
-                }
-            } else {
-                needBanknotes = banknotes.get(banknote);
-                if (needBanknotes > 0) {
-                    cashToGet.put(banknote, needBanknotes);
-                    remainingSum = remainingSum % banknote.getNominal();
+            for (Cell cell: banknotes){
+                if (cell.getBanknote().equals(banknote)){
+                    if (needBanknotes <= cell.getCount()) {
+                        if (needBanknotes > 0) {
+                            cashToGet.put(banknote, needBanknotes);
+                            remainingSum = remainingSum % banknote.getNominal();
+                        }
+                    } else {
+                        needBanknotes = cell.getCount();
+                        if (needBanknotes > 0) {
+                            cashToGet.put(banknote, needBanknotes);
+                            remainingSum = remainingSum % banknote.getNominal();
+                        }
+                    }
                 }
             }
+
         }
         return remainingSum;
-    }
-
-    @Override
-    public void getAccountBalance(Client client) {
-        long sum = bank.balance(client.getId());
-        if (getAmount() >= sum) {
-            logger.info("Купюры в банкомате до выдачи:");
-            for (Banknote banknote : banknotes.keySet()) {
-                logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
-            }
-            Map<Banknote, Integer> cashToGet = new HashMap<>();
-            long remainingSum = getRemainingSum(sum, cashToGet);
-            if (remainingSum > 0) sum -= remainingSum;
-            for (Banknote banknote : cashToGet.keySet()) {
-                int quantityATMBanknote = banknotes.get(banknote);
-                int quantityPutBanknote = cashToGet.get(banknote);
-                banknotes.put(banknote, quantityATMBanknote - quantityPutBanknote);
-            }
-            logger.info("Выданные купюры:");
-            for (Banknote banknote : cashToGet.keySet()) {
-                logger.info(banknote.getNominal() + "руб: " + cashToGet.get(banknote));
-            }
-            logger.info("Купюры в банкомате после выдачи:");
-            for (Banknote banknote : banknotes.keySet()) {
-                logger.info(banknote.getNominal() + "руб: " + banknotes.get(banknote));
-            }
-            bank.creditBill(client.getId(), sum);
-            client.getMoney(cashToGet);
-        } else System.out.println("Не достаточно средств вбанкомате");
     }
 
     private List<Banknote> sortNominal() {
@@ -166,5 +147,44 @@ class ATMimplement implements ATM {
                 .sorted(Comparator.comparing(Banknote::getNominal).reversed()).collect(Collectors.toList());
     }
 
+    @Override
+    public void getAccountBalance(Client client) {
+        long sum = bank.balance(client);
+        if (getAmount() >= sum) {
+            logger.info("Купюры в банкомате до выдачи:");
+            for (Cell cell : banknotes) {
+                logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
+            }
+            Map<Banknote, Integer> cashToGet = new HashMap<>();
+            long remainingSum = getRemainingSum(sum, cashToGet);
+            if (remainingSum > 0) sum -= remainingSum;
+            for (Banknote banknote : cashToGet.keySet()) {
+                for (Cell cell: banknotes){
+                    if (cell.getBanknote().equals(banknote)){
+                        cell.setCount(cell.getCount() - cashToGet.get(banknote));
+                    }
+                }
+            }
+            logger.info("Выданные купюры:");
+            for (Banknote banknote : cashToGet.keySet()) {
+                logger.info(banknote.getNominal() + "руб: " + cashToGet.get(banknote));
+            }
+            logger.info("Купюры в банкомате после выдачи:");
+            for (Cell cell : banknotes) {
+                logger.info(cell.getBanknote().getNominal() + "руб: " + cell.getCount());
+            }
+            bank.creditBill(client, sum);
+            client.withdrawMoney(cashToGet);
+        } else System.out.println("Не достаточно средств вбанкомате");
+    }
+
+    @Override
+    public Map<Banknote, Integer> lookBanknotes() {
+        Map<Banknote, Integer> cashCopy = new HashMap<>();
+        for (Cell cell : banknotes) {
+            cashCopy.put(cell.getBanknote(), cell.getCount());
+        }
+        return cashCopy;
+    }
 
 }

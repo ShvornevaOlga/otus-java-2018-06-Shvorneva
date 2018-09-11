@@ -6,14 +6,14 @@ public class Main {
     public static void main(String[] args) {
         Client client = new Client(1);
         Map<Banknote, Integer> cash = new HashMap<>();
-        cash.put(Banknote.banknote_50, 3);
-        cash.put(Banknote.banknote_100, 8);
-        client.getMoney(cash);
+        cash.put(Banknote.BANKNOTE_50, 3);
+        cash.put(Banknote.BANKNOTE_100, 8);
+        client.withdrawMoney(cash);
 
-        BankImpl bank = new BankImpl();
-        bank.addBill(client.getId());
+        Bank bank = new BankImpl();
+        bank.addBill(client);
 
-        ATMimplement atm = new ATMimplement();
+        ATM atm = new ATMimplement();
         atm.setBank(bank);
         Map<Banknote, Integer> banknotesInAtm = new HashMap<>();
         for (Banknote banknote : Banknote.values()) {

@@ -1,9 +1,11 @@
 package ru.shoe.lo71atm;
 
 public interface Bank {
-    void depositBill(long idClient, long sum);
+    void depositBill(Client client, long sum);
 
-    void creditBill(long idClient, long sum);
+    void creditBill(Client client, long sum);
 
-    long balance(long idClient);
+    long balance(Client client);
+
+    void addBill(Client client);
 }

@@ -1,8 +1,8 @@
 package ru.shoe.lo71atm;
 
 public enum Banknote {
-    banknote_50(50), banknote_100(100), banknote_500(500), banknote_1000(1000), banknote_5000(5000);
-    int nominal;
+    BANKNOTE_50(50), BANKNOTE_100(100), BANKNOTE_500(500), BANKNOTE_1000(1000), BANKNOTE_5000(5000);
+    private int nominal;
 
     Banknote(int nominal) {
         this.nominal = nominal;

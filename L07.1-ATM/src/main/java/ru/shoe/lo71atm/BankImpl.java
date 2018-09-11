@@ -4,26 +4,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 class BankImpl implements Bank {
-    private Map<Long, Bill> bills = new HashMap<>();
+    private Map<Client, Bill> bills = new HashMap<>();
 
     @Override
-    public void depositBill(long idClient, long sum) {
-        Bill bill = bills.get(idClient);
+    public void depositBill(Client client, long sum) {
+        Bill bill = bills.get(client);
         bill.deposit(sum);
     }
 
     @Override
-    public void creditBill(long idClient, long sum) {
-        Bill bill = bills.get(idClient);
+    public void creditBill(Client client, long sum) {
+        Bill bill = bills.get(client);
         bill.credit(sum);
     }
 
     @Override
-    public long balance(long idClient) {
-        return bills.get(idClient).getBalance();
+    public long balance(Client client) {
+        return bills.get(client).getBalance();
     }
 
-    void addBill(long idClient) {
-        bills.put(idClient, new Bill());
+    @Override
+    public void addBill(Client client) {
+        bills.put(client, new Bill());
     }
 }

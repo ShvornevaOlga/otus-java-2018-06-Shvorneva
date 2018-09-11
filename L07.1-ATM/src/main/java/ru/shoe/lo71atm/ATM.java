@@ -10,4 +10,10 @@ public interface ATM {
     void getAccountBalance(Client client);
 
     Map<Banknote, Integer> lookBanknotes();
+
+    void setBank(Bank bank);
+
+    void setBanknotes(Map<Banknote, Integer> cash);
+
+    long getAmount();
 }

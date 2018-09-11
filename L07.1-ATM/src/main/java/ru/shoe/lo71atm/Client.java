@@ -28,7 +28,7 @@ class Client {
     //==================================================================================================================
     //==========================methods======================================================================
     //==================================================================================================================
-    void getMoney(Map<Banknote, Integer> getBanknotes) {
+    void withdrawMoney(Map<Banknote, Integer> getBanknotes) {
         for (Banknote banknote : cash.keySet()) {
             int quantityClientBanknote = cash.get(banknote);
             int quantityPayBanknote = 0;
