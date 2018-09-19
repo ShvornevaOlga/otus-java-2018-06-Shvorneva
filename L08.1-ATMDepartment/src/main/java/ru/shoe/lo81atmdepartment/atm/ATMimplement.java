@@ -33,8 +33,7 @@ public class ATMimplement implements ATM {
         if (cellList != null) {
             banknotes.clear();
             for (Cell cell : cellList) {
-                Cell cellATM = new Cell(cell.getBanknote());
-                cellATM.setCount(cell.getCount());
+                Cell cellATM = new Cell(cell.getBanknote(), cell.getCount());
                 banknotes.add(cellATM);
             }
         }
@@ -65,7 +64,7 @@ public class ATMimplement implements ATM {
             int quantityPutBanknote = putBanknotes.get(banknote);
             for (Cell cell : banknotes) {
                 if (cell.getBanknote().equals(banknote)) {
-                    cell.setCount(cell.getCount() + quantityPutBanknote);
+                    cell.addBanknotesToCell(quantityPutBanknote);
                 }
             }
             sum += banknote.getNominal() * quantityPutBanknote;
@@ -95,7 +94,7 @@ public class ATMimplement implements ATM {
                     for (Banknote banknote : cashToGet.keySet()) {
                         for (Cell cell : banknotes) {
                             if (cell.getBanknote().equals(banknote)) {
-                                cell.setCount(cell.getCount() - cashToGet.get(banknote));
+                                cell.removeBanknotesFromCell( cashToGet.get(banknote));
                             }
                         }
                     }
@@ -161,7 +160,7 @@ public class ATMimplement implements ATM {
             for (Banknote banknote : cashToGet.keySet()) {
                 for (Cell cell : banknotes) {
                     if (cell.getBanknote().equals(banknote)) {
-                        cell.setCount(cell.getCount() - cashToGet.get(banknote));
+                        cell.removeBanknotesFromCell(cashToGet.get(banknote));
                     }
                 }
             }
@@ -188,14 +187,8 @@ public class ATMimplement implements ATM {
     }
 
     @Override
-    public List<Cell> lookCells() {
-        List<Cell> cells = new ArrayList<>();
-        for (Cell cell : banknotes) {
-            Cell cellCopy = new Cell(cell.getBanknote());
-            cellCopy.setCount(cell.getCount());
-            cells.add(cellCopy);
-        }
-        return cells;
+    public List<Cell> getBanknotes() {
+        return banknotes;
     }
 
 }

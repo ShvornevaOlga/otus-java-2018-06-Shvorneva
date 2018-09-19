@@ -38,8 +38,7 @@ public class Main {
             atm.setBank(bank);
             List<Cell> cellList = new ArrayList<>();
             for (Banknote banknote : Banknote.values()) {
-                Cell cell = new Cell(banknote);
-                cell.setCount(10+i*50);
+                Cell cell = new Cell(banknote, 10+i*50);
                 cellList.add(cell);
             }
             atm.setBanknotes(cellList);

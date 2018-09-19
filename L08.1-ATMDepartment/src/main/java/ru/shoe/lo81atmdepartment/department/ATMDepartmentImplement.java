@@ -28,9 +28,9 @@ public class ATMDepartmentImplement implements ATMDepartment {
     @Override
     public void encashment() {
         for (ATM atm : atmList) {
-            logger.info("Ячейки до инкассации" + atm.lookCells());
+            logger.info("Ячейки до инкассации" + atm.getBanknotes());
             atm.setBanknotes(originator.restoreState(atm));
-            logger.info("Ячейки после инкассации" + atm.lookCells());
+            logger.info("Ячейки после инкассации" + atm.getBanknotes());
         }
     }
 }

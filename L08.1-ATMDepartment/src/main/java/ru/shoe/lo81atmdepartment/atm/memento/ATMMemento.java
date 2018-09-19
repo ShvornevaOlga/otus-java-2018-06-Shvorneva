@@ -9,7 +9,10 @@ class ATMMemento {
     private final List<Cell> state = new ArrayList<>();
 
     ATMMemento(List<Cell> state) {
-        this.state.addAll(state);
+        for (Cell cell: state){
+            Cell cellCopy = new Cell(cell.getBanknote(), cell.getCount());
+            this.state.add(cellCopy);
+        }
     }
 
     List<Cell> getState() {

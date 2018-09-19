@@ -50,9 +50,8 @@ public class ATMDepartmentImplementTest {
             atm.setBank(bank);
             List<Cell> cellList = new ArrayList<>();
             for (Banknote banknote : Banknote.values()) {
-                Cell cell = new Cell(banknote);
                 int count = 10 + i * 50;
-                cell.setCount(count);
+                Cell cell = new Cell(banknote, count);
                 cellList.add(cell);
                 sum += banknote.getNominal() * count;
             }

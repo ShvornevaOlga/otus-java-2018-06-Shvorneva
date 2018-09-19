@@ -6,20 +6,25 @@ public class Cell {
     private Banknote banknote;
     private int count;
 
-    public Cell(Banknote banknote) {
+    public Cell(Banknote banknote, int count) {
         this.banknote = banknote;
+        this.count = count;
     }
 
-    Banknote getBanknote() {
+    public Banknote getBanknote() {
         return banknote;
     }
 
-    int getCount() {
+    public int getCount() {
         return count;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    void addBanknotesToCell(int count) {
+        this.count += count;
+    }
+
+    void removeBanknotesFromCell(int count) {
+        this.count -= count;
     }
 
     @Override

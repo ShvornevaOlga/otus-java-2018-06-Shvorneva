@@ -11,7 +11,7 @@ public class ATMOriginator {
     private Map<ATM, ATMMemento> memento = new HashMap<>();
 
     public void saveState(ATM atm) {
-        memento.put(atm, new ATMMemento(atm.lookCells()));
+        memento.put(atm, new ATMMemento(atm.getBanknotes()));
     }
 
     public List<Cell> restoreState(ATM atm) {

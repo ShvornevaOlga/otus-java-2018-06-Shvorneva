@@ -27,8 +27,7 @@ public class ATMimplementTest {
         atm.setBank(bankImpl);
         List<Cell> cellList = new ArrayList<>();
         for (Banknote banknote : Banknote.values()) {
-            Cell cell = new Cell(banknote);
-            cell.setCount(100);
+            Cell cell = new Cell(banknote, 100);
             cellList.add(cell);
         }
         atm.setBanknotes(cellList);

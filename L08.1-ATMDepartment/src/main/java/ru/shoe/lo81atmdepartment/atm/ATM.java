@@ -15,7 +15,7 @@ public interface ATM {
 
     Map<Banknote, Integer> lookBanknotes();
 
-    List<Cell> lookCells();
+    List<Cell> getBanknotes();
 
     void setBank(Bank bank);
 
