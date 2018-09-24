@@ -1,6 +1,7 @@
 package ru.shoe.lo81atmdepartment.atm;
 
 import org.slf4j.LoggerFactory;
+import ru.shoe.lo81atmdepartment.atm.memento.ATMMemento;
 import ru.shoe.lo81atmdepartment.bank.Bank;
 import ru.shoe.lo81atmdepartment.Banknote;
 import ru.shoe.lo81atmdepartment.Client;
@@ -187,8 +188,7 @@ public class ATMimplement implements ATM {
     }
 
     @Override
-    public List<Cell> getBanknotes() {
-        return banknotes;
+    public ATMMemento createAtmMemento() {
+        return new ATMMemento(banknotes);
     }
-
 }

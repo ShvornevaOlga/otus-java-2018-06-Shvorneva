@@ -1,6 +1,7 @@
 package ru.shoe.lo81atmdepartment.atm;
 
 import ru.shoe.lo81atmdepartment.*;
+import ru.shoe.lo81atmdepartment.atm.memento.ATMMemento;
 import ru.shoe.lo81atmdepartment.bank.Bank;
 
 import java.util.List;
@@ -15,12 +16,11 @@ public interface ATM {
 
     Map<Banknote, Integer> lookBanknotes();
 
-    List<Cell> getBanknotes();
-
     void setBank(Bank bank);
 
     void setBanknotes(List<Cell> cellList);
 
     long getAmount();
 
+   ATMMemento createAtmMemento();
 }

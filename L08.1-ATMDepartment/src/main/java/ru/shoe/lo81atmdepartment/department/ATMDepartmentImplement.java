@@ -9,7 +9,6 @@ import java.util.List;
 public class ATMDepartmentImplement implements ATMDepartment {
     private List<ATM> atmList;
     private ATMOriginator originator;
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(ATMDepartmentImplement.class);
 
     public ATMDepartmentImplement(List<ATM> atmList, ATMOriginator originator) {
         this.atmList = atmList;
@@ -28,9 +27,7 @@ public class ATMDepartmentImplement implements ATMDepartment {
     @Override
     public void encashment() {
         for (ATM atm : atmList) {
-            logger.info("Ячейки до инкассации" + atm.getBanknotes());
             atm.setBanknotes(originator.restoreState(atm));
-            logger.info("Ячейки после инкассации" + atm.getBanknotes());
         }
     }
 }
