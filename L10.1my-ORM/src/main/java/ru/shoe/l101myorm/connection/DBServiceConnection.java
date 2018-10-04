@@ -46,12 +46,10 @@ public class DBServiceConnection implements DBService {
     }
 
     @Override
-    public List<UsersDataSet> getAllUsers() throws SQLException {
+    public List<UsersDataSet> getAllUsers() {
         TExecutor executor = new TExecutor(getConnection());
-
-        return executor.execQuery("select * from usersdataset", result -> {
+        return executor.execQuery("select * from usersdataset",PreparedStatement::execute, result -> {
             List<UsersDataSet> users = new ArrayList<>();
-
             while (!result.isLast()) {
                 result.next();
                 int age = result.getInt("age");
@@ -89,14 +87,11 @@ public class DBServiceConnection implements DBService {
         TExecutor executor = new TExecutor(getConnection());
         StringBuilder query = new StringBuilder("select * from ");
         query.append(clazz.getSimpleName());
-        query.append(" where id = ").append(id);
-        System.out.println(query.toString());
-        try {
-            return executor.execQuery(query.toString(), new LoadHandler<>(clazz));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        query.append(" where id = ?");
+        return executor.execQuery(query.toString(),statement -> {
+                statement.setLong(1, id);
+            statement.execute();
+        }, new LoadHandler<>(clazz));
     }
 
     @Override

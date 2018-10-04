@@ -9,11 +9,14 @@ public class TExecutor {
         this.connection = connection;
     }
 
-    public <T> T execQuery(String query, TResultHandler<T> handler) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(query);
+    public <T> T execQuery(String query, ExecuteHandler prepare, TResultHandler<T> handler) {
+        try (PreparedStatement stmt = getConnection().prepareStatement(query)){
+            prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
             return handler.handle(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
