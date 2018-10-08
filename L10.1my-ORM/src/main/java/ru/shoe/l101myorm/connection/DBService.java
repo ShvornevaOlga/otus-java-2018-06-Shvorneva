@@ -4,6 +4,7 @@ import ru.shoe.l101myorm.base.DataSet;
 import ru.shoe.l101myorm.base.UsersDataSet;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 public interface DBService extends AutoCloseable {
@@ -11,7 +12,7 @@ public interface DBService extends AutoCloseable {
 
     void prepareTables() throws SQLException;
 
-    List<UsersDataSet> getAllUsers() throws SQLException;
+    <T extends DataSet> Collection<T> getAllUsers(Class<T> clazz) throws SQLException;
 
     void deleteTables() throws SQLException;
 

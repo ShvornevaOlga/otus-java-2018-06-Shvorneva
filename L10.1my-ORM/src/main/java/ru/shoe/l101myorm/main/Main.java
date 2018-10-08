@@ -4,6 +4,8 @@ import ru.shoe.l101myorm.base.DataSet;
 import ru.shoe.l101myorm.base.UsersDataSet;
 import ru.shoe.l101myorm.connection.DBService;
 import ru.shoe.l101myorm.connection.DBServiceConnection;
+
+import java.util.ArrayList;
 import java.util.List;
 /**
  * mysql> CREATE USER 'tully'@'localhost' IDENTIFIED BY 'tully';
@@ -26,7 +28,7 @@ public class Main {
             dbService.save(dataSet);
             dbService.save(dataSet2);
             System.out.println(dbService.load(1, UsersDataSet.class));
-            List<UsersDataSet> users = dbService.getAllUsers();
+            List<UsersDataSet> users = new ArrayList<>(dbService.getAllUsers(UsersDataSet.class));
             System.out.println("All users: " + users.toString());
             dbService.deleteTables();
         }

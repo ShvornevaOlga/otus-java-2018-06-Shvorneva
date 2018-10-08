@@ -9,8 +9,10 @@ import ru.shoe.l101myorm.tree.QueryBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -45,10 +47,18 @@ public class DBServiceConnection implements DBService {
         System.out.println("Tables created");
     }
 
-    @Override
-    public List<UsersDataSet> getAllUsers() {
+    public <T extends DataSet> Collection<T> getAllUsers(Class<T> clazz) {
         TExecutor executor = new TExecutor(getConnection());
-        return executor.execQuery("select * from usersdataset",PreparedStatement::execute, result -> {
+        String query = String.format("select * from %s", clazz.getSimpleName());
+        return executor.execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
+    }
+
+    /*@Override
+    public <T extends DataSet> Collection<T> getAllUsers(Class<T> clazz) {
+        TExecutor executor = new TExecutor(getConnection());
+        String query = String.format("select * from %s", clazz.getSimpleName());
+        return executor.execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
+       *//* return executor.execQueryList("select * from usersdataset",PreparedStatement::execute, result -> {
             List<UsersDataSet> users = new ArrayList<>();
             while (!result.isLast()) {
                 result.next();
@@ -60,8 +70,8 @@ public class DBServiceConnection implements DBService {
                 users.add(user);
             }
             return users;
-        });
-    }
+        });*//*
+    }*/
 
     @Override
     public void deleteTables() {
@@ -77,7 +87,11 @@ public class DBServiceConnection implements DBService {
         TExecutor exec = new TExecutor(getConnection());
         exec.execUpdate(QueryBuilder.insertDataSet(user), statement -> {
             QueryBuilder.acceptStatment(user, statement);
-            statement.execute();
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                user.setId(rs.getLong(1));
+            }
         });
         System.out.println("User added");
     }
@@ -85,10 +99,8 @@ public class DBServiceConnection implements DBService {
     @Override
     public <T extends DataSet> T load(long id, Class<T> clazz) {
         TExecutor executor = new TExecutor(getConnection());
-        StringBuilder query = new StringBuilder("select * from ");
-        query.append(clazz.getSimpleName());
-        query.append(" where id = ?");
-        return executor.execQuery(query.toString(),statement -> {
+        String query = String.format("select * from %s where id = ?", clazz.getSimpleName());
+        return executor.execQuery(query,statement -> {
                 statement.setLong(1, id);
             statement.execute();
         }, new LoadHandler<>(clazz));

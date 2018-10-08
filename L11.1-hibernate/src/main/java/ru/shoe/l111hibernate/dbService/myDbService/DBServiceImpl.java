@@ -49,8 +49,8 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<UserDataSet> readAll() {
-        TExecutor executor = new TExecutor(getConnection());
-        return new ArrayList<>(executor.loadAll(UserDataSet.class));
+        UserDataSetDAO userDataSetDAO = new UserDataSetDAO(getConnection());
+        return userDataSetDAO.readAll();
     }
 
     @Override

@@ -4,6 +4,8 @@ import ru.shoe.l111hibernate.base.datasets.UserDataSet;
 import ru.shoe.l111hibernate.executor.TExecutor;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDataSetDAO {
     private TExecutor executor;
@@ -22,5 +24,9 @@ public class UserDataSetDAO {
 
     public UserDataSet readByName(String name) {
         return executor.loadCriteria("name", name, UserDataSet.class);
+    }
+
+    public List<UserDataSet> readAll() {
+        return new ArrayList<>(executor.loadAll(UserDataSet.class));
     }
 }
