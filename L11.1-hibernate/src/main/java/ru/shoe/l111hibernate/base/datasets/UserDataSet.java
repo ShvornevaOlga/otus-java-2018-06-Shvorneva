@@ -4,9 +4,10 @@ import ru.shoe.l111hibernate.base.DataSet;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 @Entity
-@Table(name = "user")
+@Table(name = "userDataSet")
 public class UserDataSet extends DataSet {
     @Column(name = "name")
     private String name;
@@ -60,6 +61,23 @@ public class UserDataSet extends DataSet {
 
     public void setAdress(AdressDataSet adress) {
         this.adress = adress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserDataSet)) return false;
+        UserDataSet that = (UserDataSet) o;
+        return getAge() == that.getAge() &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getPhones(), that.getPhones()) &&
+                Objects.equals(getAdress(), that.getAdress());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getName(), getAge(), getPhones(), getAdress());
     }
 
     @Override

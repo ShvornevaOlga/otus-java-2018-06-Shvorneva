@@ -60,7 +60,7 @@ public class LoadHandler<T> implements TResultHandler<T> {
                     if (DataSet.class.isAssignableFrom(type)) {
                         if (!AnnotationHandler.isAnnotated(field, javax.persistence.ManyToOne.class)) {
                             TExecutor executor = new TExecutor(result.getStatement().getConnection());
-                            field.set(myInstance, executor.load(result.getLong(field.getName()), type));
+                            field.set(myInstance, executor.load(result.getLong(field.getName()+"_id"), type));
                         }
                     }
                     if (AnnotationHandler.isAnnotated(field, javax.persistence.OneToMany.class)) {
@@ -70,7 +70,7 @@ public class LoadHandler<T> implements TResultHandler<T> {
                 }
 
                 return myInstance;
-            } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException | NoSuchFieldException e) {
+            } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException | NoSuchFieldException | DBServiceException e) {
                 e.printStackTrace();
             }
 
@@ -84,7 +84,12 @@ public class LoadHandler<T> implements TResultHandler<T> {
         if (t instanceof ParameterizedType) {
             Class genericType = (Class) ((ParameterizedType) t).getActualTypeArguments()[0];
             if (DataSet.class.isAssignableFrom(genericType)) {
-                Collection<DataSet> collection = executor.loadCriteriaList(clazz.getSimpleName(), String.valueOf(result.getLong("id")), genericType);
+                Collection<DataSet> collection = null;
+                try {
+                    collection = executor.loadCriteriaList(clazz.getSimpleName()+"_id", String.valueOf(result.getLong("id")), genericType);
+                } catch (DBServiceException e) {
+                    e.printStackTrace();
+                }
                 if (collection != null) {
                     for (DataSet dataSet : collection) {
                         for (Field collField : dataSet.getClass().getDeclaredFields()) {

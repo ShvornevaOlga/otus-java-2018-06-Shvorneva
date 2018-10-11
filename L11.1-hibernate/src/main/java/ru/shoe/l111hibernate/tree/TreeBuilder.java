@@ -2,7 +2,6 @@ package ru.shoe.l111hibernate.tree;
 
 import ru.shoe.l111hibernate.executor.AnnotationHandler;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

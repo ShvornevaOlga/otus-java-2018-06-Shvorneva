@@ -11,18 +11,17 @@ public class TExecutor {
         this.connection = connection;
     }
 
-    public <T> T execQuery(String query, ExecuteHandler prepare, TResultHandler<T> handler) {
+    public <T> T execQuery(String query, ExecuteHandler prepare, TResultHandler<T> handler) throws DBServiceException {
         try (PreparedStatement stmt = getConnection().prepareStatement(query)){
             prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
             return handler.handle(result);
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new DBServiceException(e.getMessage());
         }
     }
 
-    public  <T> Collection<T> execQueryList(String query, ExecuteHandler prepare, TResultHandler<T> handler) {
+    public  <T> Collection<T> execQueryList(String query, ExecuteHandler prepare, TResultHandler<T> handler) throws DBServiceException {
         try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
             prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
@@ -35,18 +34,17 @@ public class TExecutor {
             }
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new DBServiceException(e.getMessage());
         }
     }
 
-    public void execUpdate(String update, ExecuteHandler prepare) {
+    public void execUpdate(String update, ExecuteHandler prepare) throws DBServiceException {
         try {
             PreparedStatement stmt = getConnection().prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
             prepare.accept(stmt);
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DBServiceException(e.getMessage());
         }
     }
 

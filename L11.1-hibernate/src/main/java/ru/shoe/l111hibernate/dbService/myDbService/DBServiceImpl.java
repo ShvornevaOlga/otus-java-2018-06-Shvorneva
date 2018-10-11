@@ -5,13 +5,13 @@ import ru.shoe.l111hibernate.base.DBService;
 import ru.shoe.l111hibernate.base.DataSet;
 import ru.shoe.l111hibernate.base.datasets.UserDataSet;
 import ru.shoe.l111hibernate.dbService.myDbService.dao.UserDataSetDAO;
+import ru.shoe.l111hibernate.executor.DBServiceException;
 import ru.shoe.l111hibernate.executor.TExecutor;
 import ru.shoe.l111hibernate.tree.QueryBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +42,12 @@ public class DBServiceImpl implements DBService {
     private void prepareTables() {
         TExecutor exec = new TExecutor(getConnection());
         for (Class clazz : dataSetClasses) {
-            exec.execUpdate(QueryBuilder.createTable(clazz), PreparedStatement::execute);
+            try {
+                exec.execUpdate(QueryBuilder.createTable(clazz), PreparedStatement::execute);
+            } catch (DBServiceException e) {
+                System.err.println("Can not create Tables");
+                e.printStackTrace();
+            }
         }
         System.out.println("Tables created");
     }
@@ -55,12 +60,18 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public void shutdown() {
+
     }
 
     private void dropTables(){
         TExecutor exec = new TExecutor(getConnection());
         for (Class clazz : dataSetClasses) {
-            exec.execUpdate(QueryBuilder.dropTable(clazz), PreparedStatement::execute);
+            try {
+                exec.execUpdate(QueryBuilder.dropTable(clazz), PreparedStatement::execute);
+            } catch (DBServiceException e) {
+                System.err.println("Can not drop Tables");
+                e.printStackTrace();
+            }
         }
         System.out.println("Table dropped");
     }

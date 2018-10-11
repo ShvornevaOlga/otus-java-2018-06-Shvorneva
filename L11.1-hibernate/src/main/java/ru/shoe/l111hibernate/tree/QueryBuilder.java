@@ -2,8 +2,10 @@ package ru.shoe.l111hibernate.tree;
 
 import ru.shoe.l111hibernate.base.DataSet;
 import ru.shoe.l111hibernate.executor.AnnotationHandler;
+import ru.shoe.l111hibernate.executor.DBServiceException;
 import ru.shoe.l111hibernate.executor.TExecutor;
 
+import javax.persistence.OneToOne;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,7 +45,7 @@ public class QueryBuilder {
                 query.append(", ").append(nameField).append(" varchar(256)");
             }
             if (!typeField.isPrimitive() && !typeField.equals(String.class) && !Collection.class.isAssignableFrom(typeField)) {
-                query.append(", ").append(nameField).append(" BIGINT  REFERENCES ").
+                query.append(", ").append(field.getName()).append("_id").append(" BIGINT  REFERENCES ").
                         append(field.getType().getSimpleName()).append(" (Id)");
             }
         }
@@ -65,6 +67,14 @@ public class QueryBuilder {
                 field.setAccessible(true);
                 if(field.get(object)!=null)
                 if (!field.getName().equals("id") && !Collection.class.isAssignableFrom(field.getType())) {
+                    if(AnnotationHandler.isAnnotated(field,OneToOne.class)){
+                        if (fields.length() == 0) {
+                            fields.append(field.getName()).append("_id");
+                        } else {
+                            fields.append(", ").append(field.getName()).append("_id");
+                        }
+                        countFields++;
+                    }else
                     if (!AnnotationHandler.isAnnotated(field, javax.persistence.ManyToOne.class)) {
                         if (fields.length() == 0) {
                             fields.append(field.getName());
@@ -105,7 +115,12 @@ public class QueryBuilder {
             List nodeChildren = ((Tree.Node) child).getChildren();
             if (nodeChildren.size() > 0) {
                 TExecutor executor = new TExecutor(connection);
-                executor.save((DataSet) ((NodeData) ((Tree.Node) child).getData()).getFieldData().getValue());
+                try {
+                    executor.save((DataSet) ((NodeData) ((Tree.Node) child).getData()).getFieldData().getValue());
+                } catch (DBServiceException e) {
+                    System.err.println("Can not save " +((NodeData) ((Tree.Node) child).getData()).getFieldData().getValue());
+                    e.printStackTrace();
+                }
             }
             ((Tree.Node) child).accept(visitor);
         }

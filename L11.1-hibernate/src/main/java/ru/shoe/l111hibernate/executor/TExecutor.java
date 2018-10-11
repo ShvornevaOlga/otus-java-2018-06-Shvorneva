@@ -18,7 +18,7 @@ public class TExecutor {
         this.connection = connection;
     }
 
-    private <T> T execQuery(String query, ExecuteHandler prepare, TResultHandler<T> handler) {
+    private <T> T execQuery(String query, ExecuteHandler prepare, TResultHandler<T> handler) throws DBServiceException {
         try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
             prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
@@ -26,12 +26,11 @@ public class TExecutor {
             result.beforeFirst();
             return handler.handle(result);
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new DBServiceException(e.getMessage());
         }
     }
 
-    private <T> Collection<T> execQueryList(String query, ExecuteHandler prepare, TResultHandler<T> handler) {
+    private <T> Collection<T> execQueryList(String query, ExecuteHandler prepare, TResultHandler<T> handler) throws DBServiceException {
         try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
             prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
@@ -44,35 +43,41 @@ public class TExecutor {
             }
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new DBServiceException(e.getMessage());
         }
     }
 
-    public void execUpdate(String update, ExecuteHandler prepare) {
+    public void execUpdate(String update, ExecuteHandler prepare) throws DBServiceException {
         try {
             PreparedStatement stmt = getConnection().prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
             prepare.accept(stmt);
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DBServiceException(e.getMessage());
         }
     }
 
-    public <T extends DataSet> void save(T dataset) {
+    public <T extends DataSet> void save(T dataset) throws DBServiceException {
         execUpdate(QueryBuilder.insertDataSet(dataset), statement -> {
             QueryBuilder.acceptStatment(dataset, statement);
             statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
-                dataset.setId(rs.getLong(1));
+                try {
+                    Field fieldId = dataset.getClass().getSuperclass().getDeclaredField("id");
+                    fieldId.setAccessible(true);
+                    fieldId.set(dataset, rs.getLong(1));
+                    fieldId.setAccessible(false);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         });
         setParentIdInDB(dataset);
         System.out.println("DataSet added");
     }
 
-    private <T extends DataSet> void setParentIdInDB(T dataset) {
+    private <T extends DataSet> void setParentIdInDB(T dataset) throws DBServiceException {
         for (Field field : dataset.getClass().getDeclaredFields()) {
             if (AnnotationHandler.isAnnotated(field, javax.persistence.OneToMany.class)) {
                 Type t = field.getGenericType();
@@ -80,17 +85,17 @@ public class TExecutor {
                 if (t instanceof ParameterizedType) {
                     genericType = (Class) ((ParameterizedType) t).getActualTypeArguments()[0];
                     if (DataSet.class.isAssignableFrom(genericType)) {
-                        Collection collection =(Collection)(ReflectionHelper.getFieldValue(dataset, field.getName()));
-                        if (collection!=null)
-                        for (Object o : collection) {
-                            save((DataSet) o);
-                            String update = String.format("UPDATE %s SET %s = %d where id = %d",
-                                    genericType.getSimpleName(),
-                                    dataset.getClass().getSimpleName(),
-                                    dataset.getId(),
-                                    ((DataSet) o).getId());
-                            execUpdate(update, PreparedStatement::execute);
-                        }
+                        Collection collection = (Collection) (ReflectionHelper.getFieldValue(dataset, field.getName()));
+                        if (collection != null)
+                            for (Object o : collection) {
+                                save((DataSet) o);
+                                String update = String.format("UPDATE %s SET %s = %d where id = %d",
+                                        genericType.getSimpleName(),
+                                        dataset.getClass().getSimpleName() + "_id",
+                                        dataset.getId(),
+                                        ((DataSet) o).getId());
+                                execUpdate(update, PreparedStatement::execute);
+                            }
                     }
                 }
             }
@@ -98,7 +103,7 @@ public class TExecutor {
     }
 
 
-    public <T extends DataSet> T load(long id, Class<T> clazz) {
+    public <T extends DataSet> T load(long id, Class<T> clazz) throws DBServiceException {
         String query = String.format("select * from %s where id = ?", clazz.getSimpleName());
         return execQuery(query, statement -> {
             statement.setLong(1, id);
@@ -106,12 +111,12 @@ public class TExecutor {
         }, new LoadHandler<>(clazz));
     }
 
-    public <T extends DataSet> Collection<T> loadAll(Class<T> clazz) {
+    public <T extends DataSet> Collection<T> loadAll(Class<T> clazz) throws DBServiceException {
         String query = String.format("select * from %s", clazz.getSimpleName());
         return execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
     }
 
-    <T extends DataSet> Collection<T> loadCriteriaList(String criteriaName, String criteriaData, Class<T> clazz) {
+    <T extends DataSet> Collection<T> loadCriteriaList(String criteriaName, String criteriaData, Class<T> clazz) throws DBServiceException {
         String query = String.format("select * from %s where %s = ?", clazz.getSimpleName(), criteriaName);
         return execQueryList(query, statement -> {
             statement.setString(1, criteriaData);
@@ -119,7 +124,7 @@ public class TExecutor {
         }, new LoadHandler<>(clazz));
     }
 
-    public <T extends DataSet> T loadCriteria(String criteriaName, String criteriaData, Class<T> clazz) {
+    public <T extends DataSet> T loadCriteria(String criteriaName, String criteriaData, Class<T> clazz) throws DBServiceException {
         String query = String.format("select * from %s where %s = ?", clazz.getSimpleName(), criteriaName);
         return execQuery(query, statement -> {
             statement.setString(1, criteriaData);

@@ -3,14 +3,15 @@ package ru.shoe.l111hibernate.base.datasets;
 import ru.shoe.l111hibernate.base.DataSet;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-@Table(name = "phone")
+@Table(name = "phoneDataSet")
 public class PhoneDataSet extends DataSet {
     @Column(name = "number")
     private String number;
    @ManyToOne
-    @JoinColumn(name = "User_id")
+    @JoinColumn(name = "userDataSet_id")
     private UserDataSet userDataSet;
 
     public PhoneDataSet() {
@@ -34,6 +35,20 @@ public class PhoneDataSet extends DataSet {
 
     public String getNumber() {
         return number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PhoneDataSet)) return false;
+        PhoneDataSet that = (PhoneDataSet) o;
+        return Objects.equals(getNumber(), that.getNumber());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getNumber());
     }
 
     @Override

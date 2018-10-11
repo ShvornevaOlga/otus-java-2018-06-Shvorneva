@@ -2,18 +2,17 @@ package ru.shoe.l101myorm.connection;
 
 import org.reflections.Reflections;
 import ru.shoe.l101myorm.base.DataSet;
-import ru.shoe.l101myorm.base.UsersDataSet;
+import ru.shoe.l101myorm.executor.DBServiceException;
 import ru.shoe.l101myorm.executor.LoadHandler;
 import ru.shoe.l101myorm.executor.TExecutor;
 import ru.shoe.l101myorm.tree.QueryBuilder;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 public class DBServiceConnection implements DBService {
@@ -42,7 +41,11 @@ public class DBServiceConnection implements DBService {
     public void prepareTables() {
         TExecutor exec = new TExecutor(getConnection());
         for (Class clazz : dataSetClasses) {
-            exec.execUpdate(QueryBuilder.createTable(clazz), PreparedStatement::execute);
+            try {
+                exec.execUpdate(QueryBuilder.createTable(clazz), PreparedStatement::execute);
+            } catch (DBServiceException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("Tables created");
     }
@@ -50,34 +53,23 @@ public class DBServiceConnection implements DBService {
     public <T extends DataSet> Collection<T> getAllUsers(Class<T> clazz) {
         TExecutor executor = new TExecutor(getConnection());
         String query = String.format("select * from %s", clazz.getSimpleName());
-        return executor.execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
+        try {
+            return executor.execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
+        } catch (DBServiceException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-
-    /*@Override
-    public <T extends DataSet> Collection<T> getAllUsers(Class<T> clazz) {
-        TExecutor executor = new TExecutor(getConnection());
-        String query = String.format("select * from %s", clazz.getSimpleName());
-        return executor.execQueryList(query, PreparedStatement::execute, new LoadHandler<>(clazz));
-       *//* return executor.execQueryList("select * from usersdataset",PreparedStatement::execute, result -> {
-            List<UsersDataSet> users = new ArrayList<>();
-            while (!result.isLast()) {
-                result.next();
-                int age = result.getInt("age");
-                String name = result.getString("name");
-                long id = result.getLong("id");
-                UsersDataSet user = new UsersDataSet(name, age);
-                user.setId(id);
-                users.add(user);
-            }
-            return users;
-        });*//*
-    }*/
 
     @Override
     public void deleteTables() {
         TExecutor exec = new TExecutor(getConnection());
         for (Class clazz : dataSetClasses) {
-            exec.execUpdate(QueryBuilder.dropTable(clazz), PreparedStatement::execute);
+            try {
+                exec.execUpdate(QueryBuilder.dropTable(clazz), PreparedStatement::execute);
+            } catch (DBServiceException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("Table dropped");
     }
@@ -85,14 +77,26 @@ public class DBServiceConnection implements DBService {
     @Override
     public <T extends DataSet> void save(T user) {
         TExecutor exec = new TExecutor(getConnection());
-        exec.execUpdate(QueryBuilder.insertDataSet(user), statement -> {
-            QueryBuilder.acceptStatment(user, statement);
-            statement.executeUpdate();
-            ResultSet rs = statement.getGeneratedKeys();
-            if (rs.next()) {
-                user.setId(rs.getLong(1));
-            }
-        });
+        try {
+            exec.execUpdate(QueryBuilder.insertDataSet(user), statement -> {
+                QueryBuilder.acceptStatment(user, statement);
+                statement.executeUpdate();
+                ResultSet rs = statement.getGeneratedKeys();
+                if (rs.next()) {
+                    try {
+                        Field field = user.getClass().getSuperclass().getDeclaredField("id");
+                        field.setAccessible(true);
+                        field.set(user, rs.getLong(1));
+                        field.setAccessible(false);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (DBServiceException e) {
+            System.err.println("Can not save " + user);
+            e.printStackTrace();
+        }
         System.out.println("User added");
     }
 
@@ -100,10 +104,15 @@ public class DBServiceConnection implements DBService {
     public <T extends DataSet> T load(long id, Class<T> clazz) {
         TExecutor executor = new TExecutor(getConnection());
         String query = String.format("select * from %s where id = ?", clazz.getSimpleName());
-        return executor.execQuery(query,statement -> {
-                statement.setLong(1, id);
-            statement.execute();
-        }, new LoadHandler<>(clazz));
+        try {
+            return executor.execQuery(query,statement -> {
+                    statement.setLong(1, id);
+                statement.execute();
+            }, new LoadHandler<>(clazz));
+        } catch (DBServiceException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
