@@ -21,7 +21,7 @@ public class UserDataSetDAO {
     }
 
     public UserDataSet read(long id) {
-        return session.load(UserDataSet.class, id);
+        return session.get(UserDataSet.class, id);
     }
 
     public UserDataSet readByName(String name) {

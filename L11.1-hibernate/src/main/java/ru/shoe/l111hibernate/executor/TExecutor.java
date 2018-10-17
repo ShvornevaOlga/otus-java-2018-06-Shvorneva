@@ -34,8 +34,8 @@ public class TExecutor {
         try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
             prepare.accept(stmt);
             ResultSet result = stmt.getResultSet();
-            if (!result.next()) return null;
             Collection<T> list = new ArrayList<>();
+            if (!result.next()) return list;
             result.beforeFirst();
             while (!result.isLast()) {
                 T dataset = handler.handle(result);
