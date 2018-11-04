@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 public class Main {
 
-    private static final int SIZE_ARRAY = 1_000_000;
+    private static final int SIZE_ARRAY = 10_000_000;
     private static final int NANO_TO_MILLS = 1_000_000;
-    private static final int COUNT = 100;
+    private static final int COUNT = 10;
 
     public static void main(String[] args) {
         threadSort();
