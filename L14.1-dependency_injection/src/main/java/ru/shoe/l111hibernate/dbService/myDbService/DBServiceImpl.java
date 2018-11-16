@@ -1,7 +1,6 @@
 package ru.shoe.l111hibernate.dbService.myDbService;
 
 import org.reflections.Reflections;
-import org.springframework.stereotype.Service;
 import ru.shoe.l111hibernate.base.DBService;
 import ru.shoe.l111hibernate.base.DataSet;
 import ru.shoe.l111hibernate.base.datasets.UserDataSet;
@@ -15,7 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
-@Service("myService")
+
 public class DBServiceImpl implements DBService {
     private Set<Class<? extends DataSet>> dataSetClasses = (new Reflections("ru.shoe.l111hibernate.base.datasets")).getSubTypesOf(DataSet.class);
 
