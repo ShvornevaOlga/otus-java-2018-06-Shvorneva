@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+
+    <display-name>L15.1</display-name>
+    <description>Example of message system</description>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:SpringBeans.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+    <servlet>
+        <servlet-name>addUserServlet</servlet-name>
+        <servlet-class>ru.shoe.l151.front.servlet.AddUserWebSocketServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>addUserServlet</servlet-name>
+        <url-pattern>/addUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>countUserServlet</servlet-name>
+        <servlet-class>ru.shoe.l151.front.servlet.CountUsersWebSocketServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>countUserServlet</servlet-name>
+        <url-pattern>/countUsers</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>getNameByIdServlet</servlet-name>
+        <servlet-class>ru.shoe.l151.front.servlet.GetNameByIdWebSocketServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>getNameByIdServlet</servlet-name>
+        <url-pattern>/getName</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

@@ -1,0 +1,38 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>AddUser</title>
+    <script src="js/addUser.js" type="text/javascript"></script>
+</head>
+<body onload="init();">
+<div class="top">
+    <img src="logo.png"/>
+    <br/>
+    <a href="addUser.html">Add user</a> <a href="getName.html">Get name by ID</a> <a href="countUsers.html">Get count users</a>
+</div>
+<div class="addUser" style="margin-top:10px">
+    <form name="addUser" action="">
+        <table>
+            <tr>
+                <td>name:</td>
+                <td><input type="text" name="name" id="name" required/></td>
+            </tr>
+            <tr>
+                <td>age:</td>
+                <td><input type="number" name="age" id="age" required/></td>
+            </tr>
+            <tr>
+                <td>phone number:</td>
+                <td><input type="tel" name="phoneNumber" id="phoneNumber" required/></td>
+            </tr>
+            <tr>
+                <td>adress:</td>
+                <td><input type="text" name="adress" id="adress" required/></td>
+            </tr>
+        </table>
+        <input  type="button" name="submitmsg" value="Add user" onclick="sendMessageAddUser();">
+    </form>
+    <p>Added user ID: <span id="userId"></span></p>
+</div>
+</body>
+</html>

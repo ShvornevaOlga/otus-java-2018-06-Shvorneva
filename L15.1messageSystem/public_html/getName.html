@@ -1,0 +1,21 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>GetNameByID</title>
+    <script src="js/getName.js" type="text/javascript"></script>
+</head>
+<body onload="init();">
+<div class="top">
+    <img src="logo.png"/>
+    <br/>
+    <a href="addUser.html">Add user</a> <a href="getName.html">Get name by ID</a> <a href="countUsers.html">Get count users</a>
+</div>
+<div class="getName" style="margin-top:10px">
+    <form name="getName" method="">
+        id: <input type="text" name="idUser" id="idUser"/>
+        <input type="button" name="submitmsg" value="Get name" onclick="sendMessageGetName();">
+    </form>
+    <p >Name:<span id="name"></span></p>
+</div>
+</body>
+</html>

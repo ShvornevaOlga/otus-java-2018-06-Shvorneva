@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>CountUsers</title>
+    <script src="js/countUsers.js" type="text/javascript"></script>
+</head>
+<body onload="init();">
+<div class="top">
+    <img src="logo.png"/>
+    <br/>
+    <a href="addUser.html">Add user</a> <a href="getName.html">Get name by ID</a> <a href="countUsers.html">Get count users</a>
+</div>
+<div class="countUsers">
+    <form name="message" action="">
+        <input type="button" name="submitmsg" value="Get count" onclick="sendMessageGetCount();"/>
+    </form>
+    <p>Count users: <span id="count"></span></p>
+</div>
+</body>
+</html>
