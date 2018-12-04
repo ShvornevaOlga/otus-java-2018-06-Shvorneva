@@ -2,11 +2,9 @@ package ru.otus.l161;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.otus.l161.app.Msg;
+import ru.otus.l161.app.MsgToFront;
+import ru.otus.l161.app.ServerFrontService;
 import ru.otus.l161.channel.SocketMsgWorker;
-import ru.otus.l161.messages.AddUserAnswerMsg;
-import ru.otus.l161.messages.GetCountUsersAnswerMsg;
-import ru.otus.l161.messages.GetNameAnswerMsg;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutorService;
@@ -18,11 +16,11 @@ import java.util.logging.Logger;
 public class MsgExecutor {
     private static final Logger logger = Logger.getLogger(Math.class.getName());
     @Autowired
-    private FrontendService frontendService;
+    private ServerFrontService frontendService;
     @Autowired
     private SocketMsgWorker client;
 
-    public MsgExecutor(FrontendService frontendService, SocketMsgWorker client) {
+    public MsgExecutor(ServerFrontService frontendService, SocketMsgWorker client) {
         this.frontendService = frontendService;
         this.client = client;
     }
@@ -33,8 +31,8 @@ public class MsgExecutor {
         executorService.submit(() -> {
             try {
                 while (true) {
-                    final Msg msg = client.take();
-                    this.exec(msg);
+                    final MsgToFront msg = (MsgToFront) client.take();
+                    msg.exec(frontendService);
                 }
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, e.getMessage());
@@ -42,13 +40,4 @@ public class MsgExecutor {
         });
     }
 
-    private void exec(Msg message) {
-        if (message instanceof GetCountUsersAnswerMsg) {
-            frontendService.getCountUsers(((GetCountUsersAnswerMsg) message).getCount(), ((GetCountUsersAnswerMsg) message).getWebSocketId());
-        } else if (message instanceof AddUserAnswerMsg) {
-            frontendService.addUser(((AddUserAnswerMsg) message).getUserId(), ((AddUserAnswerMsg) message).getWebSocketId());
-        } else if (message instanceof GetNameAnswerMsg) {
-            frontendService.getNameById(((GetNameAnswerMsg) message).getUserName(), ((GetNameAnswerMsg) message).getWebSocketId());
-        }
-    }
 }

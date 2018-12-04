@@ -19,4 +19,6 @@ public abstract class MsgToFront extends Msg {
     public String getTo() {
         return to;
     }
+
+    abstract public void exec(ServerFrontService frontService);
 }

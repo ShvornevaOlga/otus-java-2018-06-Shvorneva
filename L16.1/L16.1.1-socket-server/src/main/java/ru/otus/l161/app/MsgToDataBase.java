@@ -1,5 +1,7 @@
 package ru.otus.l161.app;
 
+import ru.otus.l161.channel.SocketMsgWorker;
+
 public abstract class MsgToDataBase extends Msg {
     protected String from;
     protected String webSocketId;
@@ -22,4 +24,6 @@ public abstract class MsgToDataBase extends Msg {
     public String getFrom() {
         return from;
     }
+
+    abstract public void exec(ServerDBService dbService, SocketMsgWorker client);
 }

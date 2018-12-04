@@ -1,6 +1,7 @@
 package ru.otus.l161.messages;
 
 import ru.otus.l161.app.MsgToFront;
+import ru.otus.l161.app.ServerFrontService;
 
 public class GetCountUsersAnswerMsg extends MsgToFront {
     private int count;
@@ -15,6 +16,11 @@ public class GetCountUsersAnswerMsg extends MsgToFront {
 
     public int getCount() {
         return count;
+    }
+
+    @Override
+    public void exec(ServerFrontService frontService) {
+        frontService.getCountUsers(getCount(), getWebSocketId());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.otus.l161.messages;
 
 import ru.otus.l161.app.MsgToFront;
+import ru.otus.l161.app.ServerFrontService;
 
 public class AddUserAnswerMsg extends MsgToFront {
     private String userId;
@@ -24,5 +25,10 @@ public class AddUserAnswerMsg extends MsgToFront {
                 ", to='" + to + '\'' +
                 ", webSocketId='" + webSocketId + '\'' +
                 '}';
+    }
+
+    @Override
+    public void exec(ServerFrontService frontService) {
+        frontService.addUser(getUserId(), getWebSocketId());
     }
 }

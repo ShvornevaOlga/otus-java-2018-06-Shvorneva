@@ -17,7 +17,7 @@
     </properties>
 
     <build>
-        <finalName>root</finalName>
+        <finalName>root8888</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>

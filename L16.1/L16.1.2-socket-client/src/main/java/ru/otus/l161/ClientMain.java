@@ -1,11 +1,11 @@
 package ru.otus.l161;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.otus.l161.app.Msg;
+import ru.otus.l161.app.MsgToDataBase;
+import ru.otus.l161.app.ServerDBService;
 import ru.otus.l161.channel.SocketMsgWorker;
-import ru.otus.l161.db.base.DBService;
 import ru.otus.l161.messages.PingMsg;
 
 import java.util.concurrent.ExecutorService;
@@ -20,8 +20,7 @@ public class ClientMain {
     private static final String HOST = "localhost";
     private static final int PORT = 5050;
     @Autowired
-    @Qualifier("cachedDbService")
-    private DBService dbService;
+    private ServerDBService dbService;
 
     @SuppressWarnings("InfiniteLoopStatement")
     void start() throws Exception {
@@ -30,14 +29,12 @@ public class ClientMain {
         client.init();
         Msg msg = new PingMsg("Db");
         client.send(msg);
-        MsgExecutor msgExecutor = new MsgExecutor(dbService, client);
-
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             try {
                 while (true) {
-                    final Msg message = client.take();
-                    msgExecutor.exec(message);
+                    final MsgToDataBase message = (MsgToDataBase) client.take();
+                    message.exec(dbService, client);
                 }
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, e.getMessage());

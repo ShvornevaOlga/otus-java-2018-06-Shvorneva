@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class ServerMain {
     private static final Logger logger = Logger.getLogger(ServerMain.class.getName());
 
-    private static final String CLIENT_START_COMMAND = "java -jar ../L16.1.2-socket-client/target/client.jar DBService";
+    private static final String CLIENT_START_COMMAND = "java -jar ../L16.1.2-socket-client/target/client.jar ServerDBService";
     private static final String FRONT_CLIENT_START_COMMAND = "java -jar " + System.getenv("JETTY_HOME") + "/start.jar";
     private static final String FRONT_CLIENT_2_START_COMMAND = "java -jar " + System.getenv("JETTY_HOME") + "/start.jar jetty-otherserver.xml";
     private static final String FRONT_PATH = "../L16.1.2-socket-client-front/target";
@@ -39,9 +39,10 @@ public class ServerMain {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         File source = new File(FRONT_PATH, "root.war");
         File dest = new File(JETTY_PATH);
+        File source2 = new File(FRONT_PATH, "root.war");//create war for port 8888
         File dest2 = new File(JETTY_PATH_2);
         Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        Files.copy(source.toPath(), dest2.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(source2.toPath(), dest2.toPath(), StandardCopyOption.REPLACE_EXISTING);
         startClient(executorService);
 
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
