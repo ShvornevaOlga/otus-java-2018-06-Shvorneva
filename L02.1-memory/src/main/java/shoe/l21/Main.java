@@ -14,6 +14,7 @@ public class Main {
         System.out.println("merge");
         System.out.println("merge develop");
         System.out.println("branch two");
+        System.out.println("branch three");
         getEmptyObjectMem();
         getObjectMem();
     }
