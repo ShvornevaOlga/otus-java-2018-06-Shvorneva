@@ -18,6 +18,7 @@ public class Main {
         getEmptyObjectMem();
         getObjectMem();
         System.out.println("br1");
+        System.out.println("br2");
     }
 
     private static void getObjectMem() throws InterruptedException {
