@@ -13,6 +13,7 @@ public class Main {
         System.out.println("pid: " + ManagementFactory.getRuntimeMXBean().getName());
         System.out.println("merge");
         System.out.println("merge develop");
+        System.out.println("branch two");
         getEmptyObjectMem();
         getObjectMem();
     }
