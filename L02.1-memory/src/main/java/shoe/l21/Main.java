@@ -17,6 +17,7 @@ public class Main {
         System.out.println("branch three");
         getEmptyObjectMem();
         getObjectMem();
+        System.out.println("br1");
     }
 
     private static void getObjectMem() throws InterruptedException {
